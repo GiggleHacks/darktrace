@@ -1,0 +1,20 @@
+{
+  "name": "4x-buster",
+  "version": "1.0.0",
+  "description": "Retro GUI wrapper for feroxbuster - educational cybersecurity tool",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "make": "electron-forge make"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.1.1"
+  },
+  "dependencies": {
+    "node-pty": "^1.1.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  }
+}

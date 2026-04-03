@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darktrace Crawler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../node_modules/xterm/css/xterm.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="title-left">
+      <div class="logo-wrap">
+        <span class="logo-main" data-text="DARKTRACE">DARKTRACE</span>
+      </div>
+    </div>
+    <canvas id="heartbeat-line" class="heartbeat-line"></canvas>
+    <div class="title-right">
+      <button id="btn-mute" class="btn-mute-icon" title="Toggle sound">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+          <path d="M2 6h3l4-4v14l-4-4H2V6z"/>
+          <path class="mute-waves" d="M12.5 5.5c1.2 1 2 2.5 2 3.5s-.8 2.5-2 3.5M11 7.5c.6.5 1 1.2 1 1.5s-.4 1-1 1.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Banner -->
+  <div id="error-banner" class="error-banner hidden">
+    <span id="error-text"></span>
+    <button id="error-dismiss" class="btn-dismiss">&times;</button>
+  </div>
+
+  <div class="app-body">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+
+      <!-- OSINT Menu -->
+      <div class="osint-menu">
+        <div class="osint-menu-label">OPEN SOURCE INTELLIGENCE</div>
+        <div class="osint-btn-row">
+          <button id="tool-ferox" class="osint-tile active" data-tool="ferox" title="URL Sniffer">
+            <canvas class="pixel-icon-lg" data-icon="web" width="16" height="16"></canvas>
+          </button>
+          <button id="tool-maigret" class="osint-tile" data-tool="maigret" title="Username OSINT">
+            <canvas class="pixel-icon-lg" data-icon="user" width="16" height="16"></canvas>
+          </button>
+          <button id="tool-holehe" class="osint-tile" data-tool="holehe" title="Email OSINT">
+            <canvas class="pixel-icon-lg" data-icon="email" width="16" height="16"></canvas>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- ===== FEROX CONFIG ===== -->
+      <div id="config-ferox" class="tool-config">
+        <div class="section">
+          <div class="section-label">TARGET DOMAIN</div>
+          <input type="text" id="domain" placeholder="example.com" value="flyingdragons.org" spellcheck="false" autocomplete="off">
+          <div id="conn-status" class="conn-status"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">WORDLIST</div>
+          <div class="wordlist-row">
+            <select id="wordlist"></select>
+            <button id="btn-browse" class="btn-ghost" title="Import custom wordlist">+</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">SCAN SPEED</div>
+          <div class="speed-slider-wrap">
+            <input type="range" id="speed-slider" min="0" max="2" value="1" class="speed-slider">
+            <div class="speed-labels">
+              <span class="speed-label-safe">SAFE</span>
+              <span class="speed-label-med">MED</span>
+              <span class="speed-label-fast">FAST</span>
+            </div>
+          </div>
+          <div id="speed-desc" class="speed-desc"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">FILTER BY STATUS</div>
+          <div class="status-checks">
+            <label class="status-check s-check-2xx">
+              <input type="checkbox" value="200" checked>
+              <span class="sc-code">200</span>
+              <span class="sc-desc">Page exists & loaded</span>
+            </label>
+            <label class="status-check s-check-3xx">
+              <input type="checkbox" value="301">
+              <span class="sc-code">301</span>
+              <span class="sc-desc">Redirects somewhere</span>
+            </label>
+            <label class="status-check s-check-4xx">
+              <input type="checkbox" value="401">
+              <span class="sc-code">401</span>
+              <span class="sc-desc">Login required</span>
+            </label>
+            <label class="status-check s-check-4xx">
+              <input type="checkbox" value="403">
+              <span class="sc-code">403</span>
+              <span class="sc-desc">Access denied</span>
+            </label>
+            <label class="status-check s-check-5xx">
+              <input type="checkbox" value="500">
+              <span class="sc-code">500</span>
+              <span class="sc-desc">Server crashed</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="btn-launch" class="btn-action btn-go">SCAN</button>
+        <button id="btn-abort" class="btn-action btn-stop hidden">TERMINATE</button>
+      </div>
+
+      <!-- ===== MAIGRET CONFIG ===== -->
+      <div id="config-maigret" class="tool-config hidden">
+        <div class="section">
+          <div class="section-label">USERNAME</div>
+          <input type="text" id="username" placeholder="johndoe" spellcheck="false" autocomplete="off">
+        </div>
+
+        <div class="section">
+          <div class="section-label">SCOPE</div>
+          <div class="scope-toggle">
+            <label class="scope-option"><input type="radio" name="scope" value="top" checked> <span>Top 500 sites</span></label>
+            <label class="scope-option"><input type="radio" name="scope" value="all"> <span>All sites</span></label>
+          </div>
+        </div>
+
+        <button id="btn-search" class="btn-action btn-go">SEARCH USERNAME</button>
+        <button id="btn-abort-maigret" class="btn-action btn-stop hidden">TERMINATE</button>
+      </div>
+
+      <!-- ===== HOLEHE CONFIG ===== -->
+      <div id="config-holehe" class="tool-config hidden">
+        <div class="section">
+          <div class="section-label">EMAIL ADDRESS</div>
+          <input type="text" id="email-input" placeholder="target@gmail.com" spellcheck="false" autocomplete="off">
+        </div>
+
+        <button id="btn-email-search" class="btn-action btn-go">SCAN EMAIL</button>
+        <button id="btn-abort-holehe" class="btn-action btn-stop hidden">TERMINATE</button>
+      </div>
+
+      <!-- Sprite Stage -->
+      <div id="sprite-stage" class="sprite-stage">
+        <video id="sprite-video" muted playsinline src="../../assets/robot2.mp4"></video>
+      </div>
+
+      <div class="sidebar-credit">v1.0 by David Bond</div>
+    </div>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+
+      <!-- FEROX RESULTS -->
+      <div id="results-ferox" class="results-panel">
+        <div class="results-header">
+          <span class="results-title">DISCOVERED ENDPOINTS</span>
+          <span class="results-header-right">
+            <span class="results-count"><span id="ferox-counter">0</span> hits</span>
+            <button id="btn-copy-ferox" class="btn-copy" title="Copy all URLs">COPY</button>
+          </span>
+        </div>
+        <div id="ferox-results" class="results-list">
+          <div class="results-empty">Select a target and initiate scan</div>
+        </div>
+        <div class="terminal-divider"></div>
+        <div id="ferox-terminal" class="terminal-main"></div>
+      </div>
+
+      <!-- MAIGRET RESULTS -->
+      <div id="results-maigret" class="results-panel hidden">
+        <div class="results-header">
+          <span class="results-title">FOUND ACCOUNTS</span>
+          <span class="results-header-right">
+            <span class="results-count"><span id="maigret-counter">0</span> found</span>
+            <button id="btn-copy-maigret" class="btn-copy" title="Copy all URLs">COPY</button>
+          </span>
+        </div>
+        <div id="maigret-results" class="results-list">
+          <div class="results-empty">Enter a username and search</div>
+        </div>
+        <div id="maigret-progress" class="progress-section">
+          <div class="pb-track"><div id="maigret-pb-fill" class="pb-fill"></div></div>
+          <div class="pb-row-main">
+            <span class="pb-activity" id="maigret-activity"></span>
+            <span class="pb-words"><span class="pb-label">Scanning</span> <strong id="maigret-site-total">500</strong> <span class="pb-label">sites</span></span>
+            <span id="maigret-pct" class="pb-pct"></span>
+          </div>
+          <div class="pb-row-sub">
+            <span id="maigret-found-count" class="pb-found">0 found</span>
+            <span id="maigret-rate" class="pb-rate"></span>
+            <span id="maigret-timer" class="pb-timer">00:00</span>
+          </div>
+          <div id="maigret-current-site" class="pb-current-word"></div>
+        </div>
+      </div>
+
+      <!-- HOLEHE RESULTS -->
+      <div id="results-holehe" class="results-panel hidden">
+        <div class="results-header">
+          <span class="results-title">EMAIL ACCOUNTS</span>
+          <span class="results-header-right">
+            <span class="results-count"><span id="holehe-counter">0</span> found</span>
+            <button id="btn-copy-holehe" class="btn-copy" title="Copy all services">COPY</button>
+          </span>
+        </div>
+        <div id="holehe-results" class="results-list">
+          <div class="results-empty">Enter an email and scan</div>
+        </div>
+        <div id="holehe-progress" class="progress-section">
+          <div class="pb-track"><div id="holehe-pb-fill" class="pb-fill"></div></div>
+          <div class="pb-row-main">
+            <span class="pb-activity" id="holehe-activity"></span>
+            <span class="pb-words"><strong id="holehe-checked">0</strong> <span class="pb-dim">/</span> <strong id="holehe-total">121</strong> <span class="pb-label">services checked</span></span>
+            <span id="holehe-pct" class="pb-pct">0%</span>
+          </div>
+          <div class="pb-row-sub">
+            <span id="holehe-found-count" class="pb-found">0 found</span>
+            <span id="holehe-timer" class="pb-timer">00:00</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCAN WARNING MODAL -->
+  <div id="scan-warning-overlay" class="scan-warn-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="scan-warn-title">
+    <div class="scan-warn-box">
+      <div class="scan-warn-border">
+        <div class="scan-warn-header" id="scan-warn-title">
+          <span class="scan-warn-icon" aria-hidden="true">&#9888;</span> SYSTEM WARNING <span class="scan-warn-icon" aria-hidden="true">&#9888;</span>
+        </div>
+        <div class="scan-warn-body">
+          <p>You are about to perform a scan. This will send multiple requests from your device directly to the target server.</p>
+          <p>Your IP address will be visible to the server, and the owner or administrator may be able to detect, log, and trace this activity back to you.</p>
+          <p class="scan-warn-vpn">Consider using a VPN to protect your identity.</p>
+        </div>
+        <div class="scan-warn-footer">
+          <label class="scan-warn-dismiss-check">
+            <input type="checkbox" id="scan-warn-dismiss">
+            <span>Do not show this warning again</span>
+          </label>
+          <div class="scan-warn-btns">
+            <button id="scan-warn-cancel" class="scan-warn-btn scan-warn-btn-cancel">CANCEL</button>
+            <button id="scan-warn-proceed" class="scan-warn-btn scan-warn-btn-go">PROCEED</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../node_modules/xterm/lib/xterm.js"></script>
+  <script src="../../node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+node_modules/
+assets/python/
+assets/bin/
+reports/
+stdout_out.txt
+stderr_out.txt
+*.log
+dist/
+out/
+.DS_Store
+Thumbs.db
