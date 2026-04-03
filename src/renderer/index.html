@@ -12,6 +12,38 @@
 </head>
 <body>
 
+  <!-- SPLASH SCREEN -->
+  <div id="splash-overlay" class="splash-overlay">
+    <div class="splash-box">
+      <div class="splash-vhs-overlay"></div>
+      <div class="splash-vhs-lines"></div>
+      <div class="splash-left">
+        <div class="splash-warning-title">WARNING</div>
+        <div class="splash-body">
+          <div id="splash-text" class="splash-typed"></div>
+          <span id="splash-cursor" class="splash-cursor">▌</span>
+        </div>
+        <div class="splash-footer">
+          <label class="splash-dismiss">
+            <input type="checkbox" id="splash-dismiss-check">
+            <span>Don't show this again</span>
+          </label>
+          <div class="splash-audio-controls">
+            <button id="splash-mute" class="splash-mute-btn" title="Mute">🔊</button>
+            <input type="range" id="splash-volume" class="splash-volume" min="0" max="100" value="80">
+          </div>
+          <button id="splash-accept" class="splash-accept-btn">ACCEPT</button>
+        </div>
+      </div>
+      <div class="splash-right">
+        <img src="../../assets/grok-image-9db43fcf-69e9-4535-8781-cb5fa1bfaa8c.png" alt="" class="splash-robot" draggable="false">
+      </div>
+    </div>
+    <audio id="splash-audio" preload="auto" loop>
+      <source src="../../assets/Mareux - Killer.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
   <!-- Title Bar -->
   <div class="title-bar">
     <div class="title-left">
@@ -46,13 +78,16 @@
         <div class="osint-menu-label">OPEN SOURCE INTELLIGENCE</div>
         <div class="osint-btn-row">
           <button id="tool-ferox" class="osint-tile active" data-tool="ferox" title="URL Sniffer">
-            <canvas class="pixel-icon-lg" data-icon="web" width="16" height="16"></canvas>
+            <img class="osint-icon" src="../../assets/filetype-icons/osint-web.png" alt="URL" draggable="false">
           </button>
           <button id="tool-maigret" class="osint-tile" data-tool="maigret" title="Username OSINT">
-            <canvas class="pixel-icon-lg" data-icon="user" width="16" height="16"></canvas>
+            <img class="osint-icon" src="../../assets/filetype-icons/osint-user.png" alt="User" draggable="false">
           </button>
-          <button id="tool-holehe" class="osint-tile" data-tool="holehe" title="Email OSINT">
-            <canvas class="pixel-icon-lg" data-icon="email" width="16" height="16"></canvas>
+          <button id="tool-recon" class="osint-tile" data-tool="recon" title="Network Recon">
+            <img class="osint-icon" src="../../assets/filetype-icons/web.png" alt="Net" draggable="false">
+          </button>
+          <button id="tool-extra" class="osint-tile" data-tool="extra" title="Extra Tools">
+            <img class="osint-icon" src="../../assets/filetype-icons/archive.png" alt="Extra" draggable="false">
           </button>
         </div>
       </div>
@@ -72,6 +107,45 @@
           <div class="wordlist-row">
             <select id="wordlist"></select>
             <button id="btn-browse" class="btn-ghost" title="Import custom wordlist">+</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <span class="section-label">DISPLAY FILTER</span>
+            <button id="btn-ext-all" class="btn-ext-toggle" title="Toggle all">ALL</button>
+          </div>
+          <div class="ext-checks ext-grid">
+            <label class="status-check ext-check-web">
+              <input type="checkbox" value="html,htm,php,asp,aspx,jsp" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/web.png" alt="" draggable="false">
+              <span class="sc-desc">Web</span>
+            </label>
+            <label class="status-check ext-check-image">
+              <input type="checkbox" value="png,jpg,jpeg,gif,bmp,webp,svg,ico" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/image.png" alt="" draggable="false">
+              <span class="sc-desc">Images</span>
+            </label>
+            <label class="status-check ext-check-audio">
+              <input type="checkbox" value="mp3,wav,ogg,flac,aac,wma" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/audio.png" alt="" draggable="false">
+              <span class="sc-desc">Audio</span>
+            </label>
+            <label class="status-check ext-check-video">
+              <input type="checkbox" value="mp4,avi,mkv,webm,mov,wmv" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/video.png" alt="" draggable="false">
+              <span class="sc-desc">Video</span>
+            </label>
+            <label class="status-check ext-check-document">
+              <input type="checkbox" value="pdf,doc,docx,txt,xml,csv" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/document.png" alt="" draggable="false">
+              <span class="sc-desc">Docs</span>
+            </label>
+            <label class="status-check ext-check-other">
+              <input type="checkbox" value="js,json,css,zip,rar,tar,gz,7z,db,sql,sqlite,log" checked>
+              <img class="ext-icon" src="../../assets/filetype-icons/archive.png" alt="" draggable="false">
+              <span class="sc-desc">Other</span>
+            </label>
           </div>
         </div>
 
@@ -111,11 +185,6 @@
               <span class="sc-code">403</span>
               <span class="sc-desc">Access denied</span>
             </label>
-            <label class="status-check s-check-5xx">
-              <input type="checkbox" value="500">
-              <span class="sc-code">500</span>
-              <span class="sc-desc">Server crashed</span>
-            </label>
           </div>
         </div>
 
@@ -142,15 +211,45 @@
         <button id="btn-abort-maigret" class="btn-action btn-stop hidden">TERMINATE</button>
       </div>
 
-      <!-- ===== HOLEHE CONFIG ===== -->
-      <div id="config-holehe" class="tool-config hidden">
+      <!-- ===== RECON CONFIG ===== -->
+      <div id="config-recon" class="tool-config hidden">
         <div class="section">
-          <div class="section-label">EMAIL ADDRESS</div>
-          <input type="text" id="email-input" placeholder="target@gmail.com" spellcheck="false" autocomplete="off">
+          <div class="section-label">TARGET (DOMAIN OR IP)</div>
+          <input type="text" id="recon-target" placeholder="example.com or 93.184.216.34" spellcheck="false" autocomplete="off">
         </div>
 
-        <button id="btn-email-search" class="btn-action btn-go">SCAN EMAIL</button>
-        <button id="btn-abort-holehe" class="btn-action btn-stop hidden">TERMINATE</button>
+        <div class="section">
+          <div class="section-label">MODULES</div>
+          <div class="recon-modules">
+            <label class="status-check"><input type="checkbox" id="recon-mod-ping" checked><span class="sc-desc">Ping</span></label>
+            <label class="status-check"><input type="checkbox" id="recon-mod-dns" checked><span class="sc-desc">DNS Records</span></label>
+            <label class="status-check"><input type="checkbox" id="recon-mod-tracert" checked><span class="sc-desc">Traceroute</span></label>
+            <label class="status-check"><input type="checkbox" id="recon-mod-whois" checked><span class="sc-desc">WHOIS (RDAP)</span></label>
+            <label class="status-check"><input type="checkbox" id="recon-mod-ports" checked><span class="sc-desc">Port Scan</span></label>
+            <label class="status-check"><input type="checkbox" id="recon-mod-geo" checked><span class="sc-desc">IP Geolocation</span></label>
+          </div>
+        </div>
+
+        <button id="btn-recon" class="btn-action btn-go">SCAN TARGET</button>
+        <button id="btn-abort-recon" class="btn-action btn-stop hidden">TERMINATE</button>
+      </div>
+
+      <!-- ===== EXTRA CONFIG (sidebar) ===== -->
+      <div id="config-extra" class="tool-config hidden">
+        <div class="extra-about-hero">
+          <img src="../../assets/bond.png" alt="David Bond" class="extra-about-img" draggable="false">
+          <div class="extra-about-overlay">
+            <div class="extra-about-name">David Bond</div>
+            <div class="extra-about-role">Developer</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">ABOUT THIS PROJECT</div>
+          <div class="extra-about-desc">
+            Darktrace Crawler is an open-source intelligence toolkit for security researchers and penetration testers. Built with Electron.
+          </div>
+        </div>
       </div>
 
       <!-- Sprite Stage -->
@@ -158,7 +257,7 @@
         <video id="sprite-video" muted playsinline src="../../assets/robot2.mp4"></video>
       </div>
 
-      <div class="sidebar-credit">v1.0 by David Bond</div>
+      <div class="sidebar-credit">v2.0 by David Bond</div>
     </div>
 
     <!-- ===== MAIN AREA ===== -->
@@ -171,7 +270,11 @@
           <span class="results-header-right">
             <span class="results-count"><span id="ferox-counter">0</span> hits</span>
             <button id="btn-copy-ferox" class="btn-copy" title="Copy all URLs">COPY</button>
+            <button id="btn-save-ferox" class="btn-copy" title="Save report">SAVE</button>
           </span>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="filter-ferox" class="filter-input" placeholder="Filter by URL, status code, or file type..." spellcheck="false">
         </div>
         <div id="ferox-results" class="results-list">
           <div class="results-empty">Select a target and initiate scan</div>
@@ -187,7 +290,11 @@
           <span class="results-header-right">
             <span class="results-count"><span id="maigret-counter">0</span> found</span>
             <button id="btn-copy-maigret" class="btn-copy" title="Copy all URLs">COPY</button>
+            <button id="btn-save-maigret" class="btn-copy" title="Save report">SAVE</button>
           </span>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="filter-maigret" class="filter-input" placeholder="Filter by site name or URL..." spellcheck="false">
         </div>
         <div id="maigret-results" class="results-list">
           <div class="results-empty">Enter a username and search</div>
@@ -208,28 +315,63 @@
         </div>
       </div>
 
-      <!-- HOLEHE RESULTS -->
-      <div id="results-holehe" class="results-panel hidden">
+      <!-- RECON RESULTS -->
+      <div id="results-recon" class="results-panel hidden">
         <div class="results-header">
-          <span class="results-title">EMAIL ACCOUNTS</span>
+          <span class="results-title">NETWORK RECONNAISSANCE</span>
           <span class="results-header-right">
-            <span class="results-count"><span id="holehe-counter">0</span> found</span>
-            <button id="btn-copy-holehe" class="btn-copy" title="Copy all services">COPY</button>
+            <span class="results-count"><span id="recon-module-progress">0/0</span> modules</span>
+            <button id="btn-copy-recon" class="btn-copy" title="Copy all results">COPY</button>
+            <button id="btn-save-recon" class="btn-copy" title="Save report">SAVE</button>
           </span>
         </div>
-        <div id="holehe-results" class="results-list">
-          <div class="results-empty">Enter an email and scan</div>
+        <div id="recon-results" class="results-list recon-results-list">
+          <div class="results-empty">Enter a domain or IP address and scan</div>
         </div>
-        <div id="holehe-progress" class="progress-section">
-          <div class="pb-track"><div id="holehe-pb-fill" class="pb-fill"></div></div>
+        <div id="recon-progress" class="progress-section">
+          <div class="pb-track"><div id="recon-pb-fill" class="pb-fill"></div></div>
           <div class="pb-row-main">
-            <span class="pb-activity" id="holehe-activity"></span>
-            <span class="pb-words"><strong id="holehe-checked">0</strong> <span class="pb-dim">/</span> <strong id="holehe-total">121</strong> <span class="pb-label">services checked</span></span>
-            <span id="holehe-pct" class="pb-pct">0%</span>
+            <span class="pb-activity" id="recon-activity"></span>
+            <span id="recon-current-module" class="pb-words"><span class="pb-label">Ready</span></span>
+            <span id="recon-pct" class="pb-pct"></span>
           </div>
           <div class="pb-row-sub">
-            <span id="holehe-found-count" class="pb-found">0 found</span>
-            <span id="holehe-timer" class="pb-timer">00:00</span>
+            <span id="recon-timer" class="pb-timer">00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXTRA PANEL (main area) -->
+      <div id="results-extra" class="results-panel hidden">
+        <div class="results-header">
+          <span class="results-title">EXTERNAL TOOLS</span>
+        </div>
+        <div class="extra-main-content">
+          <div class="extra-main-grid">
+            <div class="extra-tool-card" data-url="https://inteltechniques.com/tools/Search.html">
+              <div class="extra-tool-icon">&#128269;</div>
+              <div class="extra-tool-info">
+                <div class="extra-tool-name">IntelTechniques Search</div>
+                <div class="extra-tool-desc">Multi-engine OSINT search tool. Query Google, Bing, Yandex, and dozens of specialized databases from a single interface.</div>
+              </div>
+              <div class="extra-tool-arrow">&#8594;</div>
+            </div>
+            <div class="extra-tool-card" data-url="https://www.shodan.io/dashboard">
+              <div class="extra-tool-icon">&#127760;</div>
+              <div class="extra-tool-info">
+                <div class="extra-tool-name">Shodan</div>
+                <div class="extra-tool-desc">Search engine for internet-connected devices. Find exposed servers, webcams, databases, and industrial control systems by IP, port, or banner.</div>
+              </div>
+              <div class="extra-tool-arrow">&#8594;</div>
+            </div>
+            <div class="extra-tool-card" data-url="https://wiby.org/">
+              <div class="extra-tool-icon">&#128752;</div>
+              <div class="extra-tool-info">
+                <div class="extra-tool-name">Wiby</div>
+                <div class="extra-tool-desc">Search engine for the classic web. Discover forgotten, obscure, and retro websites that mainstream search engines will never show you.</div>
+              </div>
+              <div class="extra-tool-arrow">&#8594;</div>
+            </div>
           </div>
         </div>
       </div>

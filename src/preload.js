@@ -36,18 +36,23 @@ contextBridge.exposeInMainWorld('scanner', {
     ipcRenderer.on('maigret-complete', (_e, code, msg) => callback(code, msg));
   },
 
-  // Holehe
-  startHolehe: (config) => ipcRenderer.invoke('start-holehe', config),
-  abortHolehe: () => ipcRenderer.invoke('abort-holehe'),
-  onHoleheLine: (callback) => {
-    ipcRenderer.removeAllListeners('holehe-line');
-    ipcRenderer.on('holehe-line', (_e, line) => callback(line));
+  // Network Recon
+  startRecon: (config) => ipcRenderer.invoke('start-recon', config),
+  abortRecon: () => ipcRenderer.invoke('abort-recon'),
+  onReconModule: (callback) => {
+    ipcRenderer.removeAllListeners('recon-module');
+    ipcRenderer.on('recon-module', (_e, data) => callback(data));
   },
-  onHoleheComplete: (callback) => {
-    ipcRenderer.removeAllListeners('holehe-complete');
-    ipcRenderer.on('holehe-complete', (_e, code, msg) => callback(code, msg));
+  onReconPortUpdate: (callback) => {
+    ipcRenderer.removeAllListeners('recon-port-update');
+    ipcRenderer.on('recon-port-update', (_e, data) => callback(data));
+  },
+  onReconComplete: (callback) => {
+    ipcRenderer.removeAllListeners('recon-complete');
+    ipcRenderer.on('recon-complete', (_e, status) => callback(status));
   },
 
   // Shared
+  saveReport: (data) => ipcRenderer.invoke('save-report', data),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 });

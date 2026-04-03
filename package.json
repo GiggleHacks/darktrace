@@ -1,16 +1,60 @@
 {
-  "name": "4x-buster",
-  "version": "1.0.0",
-  "description": "Retro GUI wrapper for feroxbuster - educational cybersecurity tool",
+  "name": "darktrace-crawler",
+  "version": "2.0.0",
+  "description": "OSINT toolkit — URL enumeration, username search, network recon",
   "main": "src/main.js",
+  "author": "David Bond",
+  "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "make": "electron-forge make"
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable"
   },
-  "author": "",
-  "license": "MIT",
+  "build": {
+    "appId": "com.davidbond.darktrace-crawler",
+    "productName": "Darktrace Crawler",
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Darktrace Crawler"
+    },
+    "npmRebuild": false,
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "wordlists/**/*",
+      "assets/**/*",
+      "!assets/itchio-pxl-retro-computer-icons-set-110/**"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/bin",
+        "to": "bin",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "assets/python",
+        "to": "python",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "wordlists",
+        "to": "wordlists",
+        "filter": ["**/*"]
+      }
+    ]
+  },
   "devDependencies": {
-    "electron": "^41.1.1"
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1"
   },
   "dependencies": {
     "node-pty": "^1.1.0",
